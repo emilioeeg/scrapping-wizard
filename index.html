@@ -1,0 +1,521 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Scraping Blueprint & Diagnostic Wizard</title>
+  <!-- Tailwind CSS via CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    .card-option input:checked + div {
+      border-color: #3b82f6;
+      background-color: #eff6ff20;
+    }
+  </style>
+</head>
+<body class="bg-slate-900 text-slate-100 min-h-screen py-8 px-4 font-sans">
+
+  <div class="max-w-5xl mx-auto">
+    <!-- Header -->
+    <header class="text-center mb-8">
+      <h1 class="text-3xl font-extrabold text-blue-400 mb-2">Web Scraping Blueprint & Diagnostic Wizard</h1>
+      <p class="text-slate-400 text-sm">Genera diagnósticos técnicos, blueprints estructurados para agentes de IA y guarda directamente en tu repositorio.</p>
+    </header>
+
+    <!-- Stepper Header -->
+    <div class="flex justify-between items-center mb-8 bg-slate-800 p-4 rounded-xl border border-slate-700">
+      <div id="step-indicator-1" class="step-badge text-xs md:text-sm font-semibold px-3 py-1 rounded-full bg-blue-600 text-white">1. Datos y Sector</div>
+      <div id="step-indicator-2" class="step-badge text-xs md:text-sm font-semibold px-3 py-1 rounded-full bg-slate-700 text-slate-400">2. Arquitectura</div>
+      <div id="step-indicator-3" class="step-badge text-xs md:text-sm font-semibold px-3 py-1 rounded-full bg-slate-700 text-slate-400">3. Seguridad</div>
+      <div id="step-indicator-4" class="step-badge text-xs md:text-sm font-semibold px-3 py-1 rounded-full bg-slate-700 text-slate-400">4. Blueprint & Agentes</div>
+    </div>
+
+    <!-- Main Wizard Card -->
+    <div class="bg-slate-800 border border-slate-700 rounded-2xl p-6 md:p-8 shadow-2xl">
+      
+      <!-- Paso 1: Datos y Sector -->
+      <div id="step-1" class="wizard-step">
+        <h2 class="text-xl font-bold text-white mb-4">Paso 1: Contexto de Negocio y Datos</h2>
+        
+        <div class="mb-6">
+          <label class="block text-sm font-medium mb-2 text-slate-300">1. Sector de la página objetivo:</label>
+          <select id="sector" class="w-full bg-slate-900 border border-slate-700 rounded-lg p-3 text-white focus:ring-2 focus:ring-blue-500 outline-none">
+            <option value="E-Commerce / Retail">E-commerce / Retail (Catálogos, Precios)</option>
+            <option value="Bienes Raíces / Inmobiliario">Bienes Raíces / Inmobiliario</option>
+            <option value="Financiero / Fintech / Cripto">Financiero / Fintech / Cripto</option>
+            <option value="Noticias / Contenido / Blogs">Noticias / Contenido / Blogs</option>
+            <option value="Redes Sociales / Perfiles">Redes Sociales / Perfiles Públicos</option>
+            <option value="Gobierno / Registros Públicos">Gobierno / Registros Públicos</option>
+          </select>
+        </div>
+
+        <div class="mb-6">
+          <label class="block text-sm font-medium mb-2 text-slate-300">2. Frecuencia de extracción:</label>
+          <div class="grid grid-cols-1 md:grid-cols-3 gap-3">
+            <label class="card-option cursor-pointer">
+              <input type="radio" name="frecuencia" value="one_time" class="hidden" checked>
+              <div class="p-4 border border-slate-700 rounded-lg text-center hover:border-slate-500 transition">
+                <div class="font-bold text-sm mb-1">Única Vez</div>
+                <div class="text-xs text-slate-400">Extracción puntual/dump</div>
+              </div>
+            </label>
+            <label class="card-option cursor-pointer">
+              <input type="radio" name="frecuencia" value="batch_scheduled" class="hidden">
+              <div class="p-4 border border-slate-700 rounded-lg text-center hover:border-slate-500 transition">
+                <div class="font-bold text-sm mb-1">Lotes Programados</div>
+                <div class="text-xs text-slate-400">Diario, semanal o por lotes</div>
+              </div>
+            </label>
+            <label class="card-option cursor-pointer">
+              <input type="radio" name="frecuencia" value="real_time" class="hidden">
+              <div class="p-4 border border-slate-700 rounded-lg text-center hover:border-slate-500 transition">
+                <div class="font-bold text-sm mb-1">Tiempo Real</div>
+                <div class="text-xs text-slate-400">Sub-segundo / Event-driven</div>
+              </div>
+            </label>
+          </div>
+        </div>
+
+        <div class="mb-6">
+          <label class="block text-sm font-medium mb-2 text-slate-300">3. Volumen estimado por corrida:</label>
+          <select id="volumen" class="w-full bg-slate-900 border border-slate-700 rounded-lg p-3 text-white focus:ring-2 focus:ring-blue-500 outline-none">
+            <option value="low">&lt; 1,000 peticiones (Bajo)</option>
+            <option value="medium">1,000 - 100,000 peticiones (Medio)</option>
+            <option value="high">&gt; 100,000 peticiones (Alto / Escala)</option>
+          </select>
+        </div>
+
+        <div class="flex justify-end mt-8">
+          <button onclick="nextStep(2)" class="bg-blue-600 hover:bg-blue-500 text-white font-semibold px-6 py-2 rounded-lg transition">Siguiente: Arquitectura &rarr;</button>
+        </div>
+      </div>
+
+      <!-- Paso 2: Arquitectura Frontend -->
+      <div id="step-2" class="wizard-step hidden">
+        <h2 class="text-xl font-bold text-white mb-4">Paso 2: Arquitectura Frontend de la Página</h2>
+
+        <div class="mb-6">
+          <label class="block text-sm font-medium mb-2 text-slate-300">4. Renderizado principal (Inspección HTML):</label>
+          <div class="grid grid-cols-1 md:grid-cols-3 gap-3">
+            <label class="card-option cursor-pointer">
+              <input type="radio" name="renderizado" value="ssr_static" class="hidden" checked>
+              <div class="p-4 border border-slate-700 rounded-lg text-center hover:border-slate-500 transition">
+                <div class="font-bold text-sm mb-1">HTML Estático / SSR</div>
+                <div class="text-xs text-slate-400">Datos visibles en Ctrl+U</div>
+              </div>
+            </label>
+            <label class="card-option cursor-pointer">
+              <input type="radio" name="renderizado" value="spa_dynamic" class="hidden">
+              <div class="p-4 border border-slate-700 rounded-lg text-center hover:border-slate-500 transition">
+                <div class="font-bold text-sm mb-1">SPA / React / Vue</div>
+                <div class="text-xs text-slate-400">Generado dinámicamente</div>
+              </div>
+            </label>
+            <label class="card-option cursor-pointer">
+              <input type="radio" name="renderizado" value="canvas_shadow_dom" class="hidden">
+              <div class="p-4 border border-slate-700 rounded-lg text-center hover:border-slate-500 transition">
+                <div class="font-bold text-sm mb-1">Canvas / Shadow DOM</div>
+                <div class="text-xs text-slate-400">Elementos complejos u ocultos</div>
+              </div>
+            </label>
+          </div>
+        </div>
+
+        <div class="mb-6">
+          <label class="block text-sm font-medium mb-2 text-slate-300">5. Estado de las APIs Internas (F12 -&gt; Red / XHR):</label>
+          <select id="api_status" class="w-full bg-slate-900 border border-slate-700 rounded-lg p-3 text-white focus:ring-2 focus:ring-blue-500 outline-none">
+            <option value="clean_json_exposed">API JSON / GraphQL expuesta y limpia</option>
+            <option value="encrypted_xhr">Endpoints Fetch/XHR cifrados u ofuscados</option>
+            <option value="none">Sin APIs internas visibles (Sólo renderizado DOM)</option>
+          </select>
+        </div>
+
+        <div class="flex justify-between mt-8">
+          <button onclick="nextStep(1)" class="bg-slate-700 hover:bg-slate-600 text-white font-semibold px-6 py-2 rounded-lg transition">&larr; Atrás</button>
+          <button onclick="nextStep(3)" class="bg-blue-600 hover:bg-blue-500 text-white font-semibold px-6 py-2 rounded-lg transition">Siguiente: Seguridad &rarr;</button>
+        </div>
+      </div>
+
+      <!-- Paso 3: Seguridad Anti-Bot -->
+      <div id="step-3" class="wizard-step hidden">
+        <h2 class="text-xl font-bold text-white mb-4">Paso 3: Seguridad y Protecciones Anti-Bot</h2>
+
+        <div class="mb-6">
+          <label class="block text-sm font-medium mb-2 text-slate-300">6. Proveedor de Seguridad / WAF Detectado:</label>
+          <select id="antibot_provider" class="w-full bg-slate-900 border border-slate-700 rounded-lg p-3 text-white focus:ring-2 focus:ring-blue-500 outline-none">
+            <option value="none">Sin protección aparente / Límite de tasa estándar</option>
+            <option value="cloudflare">Cloudflare (Challenge Page / Turnstile)</option>
+            <option value="datadome">DataDome / Akamai / Kasada / Imperva</option>
+          </select>
+        </div>
+
+        <div class="mb-6">
+          <label class="block text-sm font-medium mb-2 text-slate-300">7. Mecanismo de bloqueo o inspección observado:</label>
+          <div class="grid grid-cols-1 md:grid-cols-3 gap-3">
+            <label class="card-option cursor-pointer">
+              <input type="radio" name="bloqueo" value="rate_limit" class="hidden" checked>
+              <div class="p-4 border border-slate-700 rounded-lg text-center hover:border-slate-500 transition">
+                <div class="font-bold text-sm mb-1">Límite por IP</div>
+                <div class="text-xs text-slate-400">Bloqueo tras N peticiones</div>
+              </div>
+            </label>
+            <label class="card-option cursor-pointer">
+              <input type="radio" name="bloqueo" value="tls_ja3_fingerprint" class="hidden">
+              <div class="p-4 border border-slate-700 rounded-lg text-center hover:border-slate-500 transition">
+                <div class="font-bold text-sm mb-1">Huella TLS (JA3/JA4)</div>
+                <div class="text-xs text-slate-400">Rechaza librerías HTTP puras</div>
+              </div>
+            </label>
+            <label class="card-option cursor-pointer">
+              <input type="radio" name="bloqueo" value="captcha" class="hidden">
+              <div class="p-4 border border-slate-700 rounded-lg text-center hover:border-slate-500 transition">
+                <div class="font-bold text-sm mb-1">CAPTCHA / Comportamiento</div>
+                <div class="text-xs text-slate-400">Retos interactivos o biométricos</div>
+              </div>
+            </label>
+          </div>
+        </div>
+
+        <div class="flex justify-between mt-8">
+          <button onclick="nextStep(2)" class="bg-slate-700 hover:bg-slate-600 text-white font-semibold px-6 py-2 rounded-lg transition">&larr; Atrás</button>
+          <button onclick="generateDiagnostic()" class="bg-emerald-600 hover:bg-emerald-500 text-white font-bold px-6 py-2 rounded-lg transition">Generar Blueprint & Diagnóstico</button>
+        </div>
+      </div>
+
+      <!-- Paso 4: Diagnóstico y Resultados -->
+      <div id="step-4" class="wizard-step hidden">
+        <h2 class="text-2xl font-bold text-emerald-400 mb-6 flex items-center justify-between">
+          <span>&check; Blueprint de Arquitectura Generado</span>
+          <div class="flex gap-2">
+            <button onclick="downloadJSON()" class="bg-blue-600 hover:bg-blue-500 text-white text-xs font-bold px-3 py-2 rounded transition">Descargar JSON</button>
+            <button onclick="downloadMD()" class="bg-purple-600 hover:bg-purple-500 text-white text-xs font-bold px-3 py-2 rounded transition">Descargar .MD Agent</button>
+          </div>
+        </h2>
+
+        <!-- Score Grid -->
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
+          <div class="bg-slate-900 border border-slate-700 p-4 rounded-xl text-center">
+            <div class="text-slate-400 text-xs mb-1">Dificultad Estimada</div>
+            <div id="res-score" class="text-3xl font-black text-blue-400">0 / 10</div>
+          </div>
+          <div class="bg-slate-900 border border-slate-700 p-4 rounded-xl text-center">
+            <div class="text-slate-400 text-xs mb-1">Costo Operativo</div>
+            <div id="res-cost" class="text-xl font-bold text-emerald-400">Bajo</div>
+          </div>
+          <div class="bg-slate-900 border border-slate-700 p-4 rounded-xl text-center">
+            <div class="text-slate-400 text-xs mb-1">Riesgo de Bloqueo</div>
+            <div id="res-risk" class="text-xl font-bold text-yellow-400">Medio</div>
+          </div>
+        </div>
+
+        <!-- Architecture Specs Summary -->
+        <div class="bg-slate-900 border border-slate-700 p-4 rounded-xl mb-6 space-y-2 text-sm">
+          <div><span class="text-slate-400">Estrategia recomendada:</span> <strong id="res-arch" class="text-blue-300"></strong></div>
+          <div><span class="text-slate-400">Stack de desarrollo:</span> <strong id="res-stack" class="text-emerald-300 font-mono"></strong></div>
+          <div><span class="text-slate-400">Infraestructura de Red:</span> <strong id="res-proxy" class="text-yellow-300"></strong></div>
+        </div>
+
+        <!-- Navigation Tabs -->
+        <div class="border-b border-slate-700 mb-4 flex gap-4 text-sm font-semibold overflow-x-auto">
+          <button onclick="showTab('json')" id="tab-btn-json" class="pb-2 border-b-2 border-blue-400 text-blue-400">JSON Blueprint</button>
+          <button onclick="showTab('prompt')" id="tab-btn-prompt" class="pb-2 border-b-2 border-transparent text-slate-400">Markdown System Prompt (AI Agent)</button>
+          <button onclick="showTab('connect')" id="tab-btn-connect" class="pb-2 border-b-2 border-transparent text-slate-400">Conectar con Agente</button>
+          <button onclick="showTab('github')" id="tab-btn-github" class="pb-2 border-b-2 border-transparent text-slate-400">Guardar en GitHub (API)</button>
+        </div>
+
+        <!-- Tab Content 1: JSON -->
+        <div id="tab-json" class="relative">
+          <pre id="json-output" class="bg-slate-950 p-4 rounded-lg text-emerald-400 font-mono text-xs overflow-x-auto border border-slate-800 max-h-72"></pre>
+          <button onclick="copyToClipboard('json-output')" class="absolute top-2 right-2 bg-slate-800 hover:bg-slate-700 text-xs px-3 py-1 rounded border border-slate-600 text-slate-300">Copiar JSON</button>
+        </div>
+
+        <!-- Tab Content 2: Markdown Agent Prompt -->
+        <div id="tab-prompt" class="relative hidden">
+          <textarea id="prompt-output" readonly class="w-full bg-slate-950 p-4 rounded-lg text-slate-300 font-mono text-xs border border-slate-800 h-72 outline-none"></textarea>
+          <button onclick="copyToClipboard('prompt-output')" class="absolute top-2 right-2 bg-slate-800 hover:bg-slate-700 text-xs px-3 py-1 rounded border border-slate-600 text-slate-300">Copiar MD</button>
+        </div>
+
+        <!-- Tab Content 3: Agent Connection Instructions -->
+        <div id="tab-connect" class="hidden bg-slate-900 p-5 rounded-xl border border-slate-700 text-slate-300 text-sm space-y-4">
+          <h3 class="font-bold text-base text-white">¿Cómo consumir este Blueprint desde un Agente de IA (Cursor, Claude Code, LangChain, AutoGPT)?</h3>
+          
+          <div class="space-y-3">
+            <div class="p-3 bg-slate-950 rounded-lg border border-slate-800">
+              <span class="font-bold text-blue-400 block mb-1">Opción A: Inyección Directa vía Contexto / System Prompt</span>
+              <p class="text-xs text-slate-400">Copia el contenido de la pestaña <strong>Markdown System Prompt</strong> y pégalo directamente en las instrucciones de tu asistente de código (Cursor `.cursorrules`, Claude Project Knowledge, o ChatGPT Custom GPT).</p>
+            </div>
+
+            <div class="p-3 bg-slate-950 rounded-lg border border-slate-800">
+              <span class="font-bold text-emerald-400 block mb-1">Opción B: Consumo por URL Raw de GitHub</span>
+              <p class="text-xs text-slate-400 mb-2">Si guardaste el archivo en tu repositorio de GitHub, tu agente o script puede leer el archivo directamente usando la URL Raw:</p>
+              <code class="block bg-slate-900 p-2 rounded text-xs font-mono text-emerald-300">https://raw.githubusercontent.com/TU_USUARIO/TU_REPO/main/blueprints/blueprint_nombre.json</code>
+            </div>
+
+            <div class="p-3 bg-slate-950 rounded-lg border border-slate-800">
+              <span class="font-bold text-purple-400 block mb-1">Opción C: Uso como Tool / Function Calling</span>
+              <p class="text-xs text-slate-400">Crea una herramienta en tu pipeline que lea la carpeta <code>/blueprints</code> del repositorio local para cargar las configuraciones antes de ejecutar el scraper.</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Tab Content 4: Direct GitHub Push via API -->
+        <div id="tab-github" class="hidden bg-slate-900 p-5 rounded-xl border border-slate-700 text-slate-300 text-sm space-y-4">
+          <h3 class="font-bold text-base text-white">Guardar archivo directamente en tu Repositorio de GitHub</h3>
+          <p class="text-xs text-slate-400">Sube automáticamente el JSON o Markdown a tu carpeta <code>/blueprints</code> usando la API REST de GitHub (sin servidores intermedios).</p>
+
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div>
+              <label class="block text-xs font-medium text-slate-400 mb-1">Usuario y Repositorio (owner/repo):</label>
+              <input type="text" id="gh-repo" placeholder="mi-usuario/scraping-blueprints" class="w-full bg-slate-950 border border-slate-700 rounded p-2 text-xs text-white outline-none">
+            </div>
+            <div>
+              <label class="block text-xs font-medium text-slate-400 mb-1">GitHub Access Token (PAT):</label>
+              <input type="password" id="gh-token" placeholder="ghp_xxxxxxxxxxxx" class="w-full bg-slate-950 border border-slate-700 rounded p-2 text-xs text-white outline-none">
+            </div>
+          </div>
+
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div>
+              <label class="block text-xs font-medium text-slate-400 mb-1">Ruta del Archivo a Crear:</label>
+              <input type="text" id="gh-path" value="blueprints/blueprint_target.json" class="w-full bg-slate-950 border border-slate-700 rounded p-2 text-xs text-white outline-none">
+            </div>
+            <div>
+              <label class="block text-xs font-medium text-slate-400 mb-1">Formato a Guardar:</label>
+              <select id="gh-format" class="w-full bg-slate-950 border border-slate-700 rounded p-2 text-xs text-white outline-none">
+                <option value="json">JSON Blueprint (.json)</option>
+                <option value="md">Markdown System Prompt (.md)</option>
+              </select>
+            </div>
+          </div>
+
+          <button onclick="commitToGitHub()" class="w-full bg-emerald-600 hover:bg-emerald-500 text-white font-bold py-2 rounded transition text-xs">Guardar Commit en Repositorio</button>
+          <div id="gh-status" class="text-xs text-center font-mono mt-2"></div>
+        </div>
+
+        <div class="flex justify-between mt-8">
+          <button onclick="nextStep(1)" class="bg-slate-700 hover:bg-slate-600 text-white font-semibold px-6 py-2 rounded-lg transition">&larr; Reiniciar Diagnóstico</button>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <script>
+    let currentStep = 1;
+    let globalJSONPayload = {};
+    let globalMDPrompt = "";
+
+    function nextStep(step) {
+      document.querySelectorAll('.wizard-step').forEach(el => el.classList.add('hidden'));
+      document.getElementById(`step-${step}`).classList.remove('hidden');
+
+      for (let i = 1; i <= 4; i++) {
+        const badge = document.getElementById(`step-indicator-${i}`);
+        if (i === step) {
+          badge.className = "step-badge text-xs md:text-sm font-semibold px-3 py-1 rounded-full bg-blue-600 text-white";
+        } else if (i < step) {
+          badge.className = "step-badge text-xs md:text-sm font-semibold px-3 py-1 rounded-full bg-emerald-900 text-emerald-300 border border-emerald-700";
+        } else {
+          badge.className = "step-badge text-xs md:text-sm font-semibold px-3 py-1 rounded-full bg-slate-700 text-slate-400";
+        }
+      }
+      currentStep = step;
+    }
+
+    function getRadioValue(name) {
+      const radio = document.querySelector(`input[name="${name}"]:checked`);
+      return radio ? radio.value : null;
+    }
+
+    function generateDiagnostic() {
+      const sector = document.getElementById('sector').value;
+      const frecuencia = getRadioValue('frecuencia');
+      const volumen = document.getElementById('volumen').value;
+      const renderizado = getRadioValue('renderizado');
+      const apiStatus = document.getElementById('api_status').value;
+      const antibot = document.getElementById('antibot_provider').value;
+      const bloqueo = getRadioValue('bloqueo');
+
+      let score = 2;
+      if (renderizado === 'spa_dynamic') score += 2;
+      if (renderizado === 'canvas_shadow_dom') score += 4;
+      if (apiStatus === 'encrypted_xhr') score += 2;
+      if (apiStatus === 'none') score += 1;
+      if (antibot === 'cloudflare') score += 2;
+      if (antibot === 'datadome') score += 4;
+      if (bloqueo === 'tls_ja3_fingerprint') score += 2;
+      if (bloqueo === 'captcha') score += 2;
+      if (score > 10) score = 10;
+
+      let arch = "", stack = "", proxy = "", cost = "Bajo ($)", risk = "Bajo";
+
+      if (score <= 3) {
+        arch = "HTTP Asíncrono Puro + Extracción Directa DOM/JSON";
+        stack = "httpx + selectolax (Python) / axios + cheerio (Node.js)";
+        proxy = "Sin proxy o Proxies Datacenter económicos por rate limits.";
+        cost = "Bajo ($)"; risk = "Bajo";
+      } else if (score <= 6) {
+        arch = "Intercepción de API Interna con Imitación TLS (TLS Impersonation)";
+        stack = "curl_cffi + pydantic (Python) / tls-client (Go/Node)";
+        proxy = "Proxies Residenciales Rotativos por petición.";
+        cost = "Medio ($$)"; risk = "Medio";       } else {         arch = "Clúster de Navegadores Headless Stealth + Anti-Detect Fingerprinting";         stack = "Camoufox + Playwright (Python) / Puppeteer-Extra Stealth (Node.js)";         proxy = "Proxies Residenciales / Móviles Premium con rotación IP por sesión.";         cost = "Alto ($$$)"; risk = "Alto / Crítico";
+      }
+
+      document.getElementById('res-score').innerText = `${score} / 10`;
+      document.getElementById('res-cost').innerText = cost;
+      document.getElementById('res-risk').innerText = risk;
+      document.getElementById('res-arch').innerText = arch;
+      document.getElementById('res-stack').innerText = stack;
+      document.getElementById('res-proxy').innerText = proxy;
+
+      const timestamp = new Date().toISOString();
+
+      globalJSONPayload = {
+        metadata: { generated_at: timestamp, version: "1.0.0" },
+        target_profile: { sector, extraction_frequency: frecuencia, estimated_volume: volumen },
+        technical_architecture: { rendering_type: renderizado, internal_api_status: apiStatus },
+        security_and_defense: { anti_bot_provider: antibot, blocking_mechanism: bloqueo },
+        recommended_blueprint: { difficulty_score: score, architecture: arch, stack: stack, proxy_strategy: proxy }
+      };
+
+      globalMDPrompt = `# SYSTEM PROMPT & SCRAPING BLUEPRINT: ${sector.toUpperCase()}
+
+> **Fecha de Generación:** ${timestamp}
+> **Dificultad Calculada:** ${score}/10
+> **Estrategia Principal:** ${arch}
+
+---
+
+## 1. INSTRUCCIONES PARA EL AGENTE DE IA
+Actúa como un **Ingeniero Senior de Web Scraping e Infraestructura de Datos**. Tu objetivo es desarrollar el código de extracción completo siguiendo la arquitectura técnica descrita en este Blueprint.
+
+### Requisitos Técnicos Obligatorios:
+- **Stack Sugerido:** \`${stack}\`
+- **Gestión de Red:** ${proxy}
+- **Estrategia Anti-Bot:** Superar las barreras de **${antibot}** evitando la detección por **${bloqueo}**.
+
+---
+
+## 2. ESPECIFICACIÓN DEL PERFIL TÉCNICO
+\`\`\`json
+${JSON.stringify(globalJSONPayload, null, 2)}
+\`\`\`
+
+---
+
+## 3. PASOS DE EJECUCIÓN DEL AGENTE
+1. **Configuración del Entorno:** Instalar las librerías indicadas en el stack (\`${stack}\`).
+2. **Construcción del Cliente HTTP / Browser:** Configurar firmas TLS/JA3 e imitación de encabezados HTTP/2 si aplica.
+3. **Manejo de Respuestas:** Validar códigos de estado (200 OK vs 403/530 de Cloudflare).
+4. **Parsing & Esquema:** Estructurar la salida de datos utilizando modelos Pydantic/Dataclasses.
+5. **Manejo de Errores & Retry:** Implementar retries exponenciales en caso de bloqueos temporales de IP.`;
+
+      document.getElementById('json-output').innerText = JSON.stringify(globalJSONPayload, null, 2);
+      document.getElementById('prompt-output').value = globalMDPrompt;
+
+      // Actualizar sugerencia de nombre en tab de GitHub
+      const cleanSector = sector.toLowerCase().replace(/[^a-z0-9]/g, '_');
+      document.getElementById('gh-path').value = `blueprints/${cleanSector}_blueprint.json`;
+
+      nextStep(4);
+    }
+
+    function showTab(tab) {
+      const tabs = ['json', 'prompt', 'connect', 'github'];
+      tabs.forEach(t => {
+        document.getElementById(`tab-${t}`).classList.add('hidden');
+        document.getElementById(`tab-btn-${t}`).className = "pb-2 border-b-2 border-transparent text-slate-400";
+      });
+
+      document.getElementById(`tab-${tab}`).classList.remove('hidden');
+      document.getElementById(`tab-btn-${tab}`).className = "pb-2 border-b-2 border-blue-400 text-blue-400";
+    }
+
+    function downloadFile(filename, content, contentType) {
+      const a = document.createElement('a');
+      const file = new Blob([content], { type: contentType });
+      a.href = URL.createObjectURL(file);
+      a.download = filename;
+      a.click();
+      URL.revokeObjectURL(a.href);
+    }
+
+    function downloadJSON() {
+      downloadFile('scraping_blueprint.json', JSON.stringify(globalJSONPayload, null, 2), 'application/json');
+    }
+
+    function downloadMD() {
+      downloadFile('agent_system_prompt.md', globalMDPrompt, 'text/markdown');
+    }
+
+    function copyToClipboard(elementId) {
+      const el = document.getElementById(elementId);
+      const text = el.value || el.innerText;
+      navigator.clipboard.writeText(text);
+      alert('¡Contenido copiado al portapapeles!');
+    }
+
+    async function commitToGitHub() {
+      const repo = document.getElementById('gh-repo').value.trim();
+      const token = document.getElementById('gh-token').value.trim();
+      let path = document.getElementById('gh-path').value.trim();
+      const format = document.getElementById('gh-format').value;
+      const statusEl = document.getElementById('gh-status');
+
+      if (!repo || !token || !path) {
+        statusEl.className = "text-xs text-center font-mono mt-2 text-red-400";
+        statusEl.innerText = "Error: Completa Repo, Token y Ruta.";
+        return;
+      }
+
+      // Ajustar extensión según selección
+      if (format === 'md' && !path.endsWith('.md')) path = path.replace(/\.[^/.]+$/, "") + ".md";
+      if (format === 'json' && !path.endsWith('.json')) path = path.replace(/\.[^/.]+$/, "") + ".json";
+
+      const content = format === 'json' ? JSON.stringify(globalJSONPayload, null, 2) : globalMDPrompt;
+      const encodedContent = btoa(unescape(encodeURIComponent(content)));
+
+      statusEl.className = "text-xs text-center font-mono mt-2 text-yellow-400";
+      statusEl.innerText = "Guardando en GitHub...";
+
+      try {
+        // Verificar si el archivo existe para obtener su SHA (por si es actualización)
+        let sha = null;
+        const checkRes = await fetch(`https://api.github.com/repos/${repo}/contents/${path}`, {
+          headers: { 'Authorization': `token ${token}` }
+        });
+        if (checkRes.ok) {
+          const checkData = await checkRes.json();
+          sha = checkData.sha;
+        }
+
+        // Subir o actualizar archivo
+        const response = await fetch(`https://api.github.com/repos/${repo}/contents/${path}`, {
+          method: 'PUT',
+          headers: {
+            'Authorization': `token ${token}`,
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({
+            message: `add: scraping blueprint ${path}`,
+            content: encodedContent,
+            sha: sha || undefined
+          })
+        });
+
+        if (response.ok) {
+          statusEl.className = "text-xs text-center font-mono mt-2 text-emerald-400";
+          statusEl.innerText = `¡Éxito! Archivo guardado en ${path}`;
+        } else {
+          const errorData = await response.json();
+          statusEl.className = "text-xs text-center font-mono mt-2 text-red-400";
+          statusEl.innerText = `Error GitHub API: ${errorData.message}`;
+        }
+      } catch (err) {
+        statusEl.className = "text-xs text-center font-mono mt-2 text-red-400";
+        statusEl.innerText = `Error de red: ${err.message}`;
+      }
+    }
+  </script>
+</body>
+</html>
